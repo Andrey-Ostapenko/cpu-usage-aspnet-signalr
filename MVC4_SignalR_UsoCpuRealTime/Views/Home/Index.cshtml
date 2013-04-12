@@ -1,0 +1,60 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts{
+    
+    <script src="~/Scripts/jquery.signalR-1.0.0.js"></script>
+    <script src="~/signalr/hubs" type="text/javascript"></script>
+
+    <script src="~/Scripts/smoothiecharts/smoothiecharts.js"></script>
+
+    <script type="text/javascript">
+            
+            var registros = new TimeSeries();
+            
+            // Cria o proxy
+            var chartHub = $.connection.cpuHub;
+            
+            // Define a função atualizaUsoCPU, esta função será invocada no broadcast de nosso Hub
+            $.extend(chartHub.client, {
+                atualizaUsoCPU: function (data) {
+                    
+                    // Atualiza o percentual usado de CPU
+                    $("#lblUsoCPU").text(data + " %");
+
+                    // Insere o pecentual usado no registro de séries
+                    registros.append(new Date().getTime(), data);
+                }
+            });
+
+            // Inicia a conexão
+            $.connection.hub.start(function () {
+                chartHub.server.iniciaTransmissaoUsoCpu();
+            });
+            
+            // Cria o gráfico e define suas opções e séries
+            function criaLinhasNoGrafico() {
+                var chart = new SmoothieChart();
+
+                var opcoes = {
+                    strokeStyle: 'rgba(255, 0, 0, 1)',
+                    fillStyle: 'rgba(255, 0, 0, 0.2)',
+                    lineWidth: 1
+                };
+
+                chart.addTimeSeries(registros, opcoes);
+                chart.streamTo($("#chart").get(0), 1000);
+            }
+
+    </script>
+}
+
+<body onload="criaLinhasNoGrafico()">
+
+    <h3>Uso da CPU:&nbsp;<label id="lblUsoCPU"></label></h3>
+    <br />
+    <canvas id="chart" width="800" height="300"></canvas>
+
+  </body>
