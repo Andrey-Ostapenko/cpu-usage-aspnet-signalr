@@ -1,5 +1,5 @@
 # Introduction
-Learn how you can build an ASP.NET SignalR + ASP.NET MVC application to check in real time the performance of CPU.
+Learn how you can build an ASP.NET SignalR + ASP.NET MVC application to monitoring in real time the performance of CPU.
 A Visual Studio 2012 solution to you learn how these technologies work.
 
 # Description
